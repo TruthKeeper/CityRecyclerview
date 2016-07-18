@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="tip_height">25dp</dimen>
+    <dimen name="padding_left">15dp</dimen>
+    <dimen name="text_size">16sp</dimen>
+</resources>

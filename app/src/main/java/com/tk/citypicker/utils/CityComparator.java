@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 /**
  * Created by TK on 2016/7/18.
+ * 排序
  */
 public class CityComparator implements Comparator<CityBean> {
     @Override

@@ -2,6 +2,10 @@ package com.tk.citypicker.utils;
 
 import android.text.TextUtils;
 
+/**
+ * Created by TK on 2016/7/19.
+ * 拼音转换工具
+ */
 public class CharacterParser {
     private static final int[] PY_VALUE = new int[]{-20319, -20317, -20304, -20295,
             -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036,

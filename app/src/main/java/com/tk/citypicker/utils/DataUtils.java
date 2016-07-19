@@ -30,6 +30,12 @@ public class DataUtils {
         return initTipList(list);
     }
 
+    /**
+     * 插入索引
+     *
+     * @param list
+     * @return
+     */
     private static final List<CityBean> initTipList(List<CityBean> list) {
         List<CityBean> newList = new ArrayList<CityBean>();
         newList.addAll(list);
@@ -67,5 +73,25 @@ public class DataUtils {
             }
         }
         return 0;
+    }
+
+    /**
+     * 抽取索引list
+     *
+     * @param list
+     * @return
+     */
+    public static final List<Character> getIndexList(List<CityBean> list) {
+        List<Character> newList = new ArrayList<Character>();
+        int l = list.size();
+        char oldC = ' ';
+        for (int i = 0; i < l; i++) {
+            char newC = list.get(i).getFirst();
+            if (oldC != newC) {
+                oldC = newC;
+                newList.add(newC);
+            }
+        }
+        return newList;
     }
 }

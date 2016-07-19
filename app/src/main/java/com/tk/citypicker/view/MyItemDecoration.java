@@ -20,30 +20,44 @@ import java.util.List;
  * Created by TK on 2016/7/18.
  */
 public class MyItemDecoration extends RecyclerView.ItemDecoration {
+    private Context mContext;
+    private List<CityBean> mList;
+    //分割线高度
     private int divider;
     private ColorDrawable drawable = new ColorDrawable(0xFFDDDDDD);
-    private Paint paint = new Paint();
-    private int tipHeight;
-    private int screenWidth;
-    private int padingLeft;
-    private float offsetY;
-    private int textColor;
-    private int darkColor;
-    private List<CityBean> mList;
 
-    public MyItemDecoration(Context context, List<CityBean> mList) {
+    private Paint paint = new Paint();
+    //屏幕宽度
+    private int screenWidth;
+    //字缩进距离
+    private int padingLeft;
+    //字体高度
+    private float textHeight;
+    //字体颜色
+    private int textColor;
+    //标签背景
+    private int tipColor;
+    //标签高度
+    private int tipHeight;
+    //标签临时高度
+    private float tipTempHeight;
+
+    public MyItemDecoration(Context mContext, List<CityBean> mList) {
+        this.mContext = mContext;
         this.mList = mList;
         divider = 2;
         paint.setAntiAlias(true);
         paint.setDither(true);
-        paint.setTextSize(context.getResources().getDimensionPixelSize(R.dimen.text_size));
-        darkColor = context.getResources().getColor(R.color.dark);
-        textColor = context.getResources().getColor(R.color.text_color);
-        tipHeight = context.getResources().getDimensionPixelOffset(R.dimen.tip_height);
-        padingLeft = context.getResources().getDimensionPixelOffset(R.dimen.padding_left);
-        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        paint.setTextSize(mContext.getResources().getDimensionPixelSize(R.dimen.text_size));
+
+        tipColor = mContext.getResources().getColor(R.color.dark);
+        textColor = mContext.getResources().getColor(R.color.text_color);
+        tipHeight = mContext.getResources().getDimensionPixelOffset(R.dimen.tip_height);
+        padingLeft = mContext.getResources().getDimensionPixelOffset(R.dimen.padding_left);
+        screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
         Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
-        offsetY = fontMetrics.descent - fontMetrics.ascent;
+        textHeight = fontMetrics.descent - fontMetrics.ascent;
+        tipTempHeight = tipHeight;
     }
 
     @Override
@@ -61,10 +75,10 @@ public class MyItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         if (isOverDraw(parent)) {
-            paint.setColor(darkColor);
-            c.drawRect(0, 0, screenWidth, tipHeight, paint);
+            paint.setColor(tipColor);
+            c.drawRect(0, 0, screenWidth, tipTempHeight, paint);
             paint.setColor(textColor);
-            c.drawText(findIndex(parent), padingLeft, offsetY, paint);
+            c.drawText(findIndex(parent), padingLeft, textHeight - (tipHeight - tipTempHeight), paint);
         }
     }
 
@@ -93,13 +107,28 @@ public class MyItemDecoration extends RecyclerView.ItemDecoration {
     private boolean isOverDraw(RecyclerView parent) {
         int p = ((LinearLayoutManager) parent.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
         if (parent.getAdapter().getItemViewType(p) == CityAdapter.ITEM_DATE) {
+            tipTempHeight = tipHeight;
+            return true;
+        }
+
+        int[] viewL = new int[2];
+        int[] parentL = new int[2];
+        View view = parent.findViewHolderForAdapterPosition(p).itemView;
+        view.getLocationInWindow(viewL);
+        parent.getLocationInWindow(parentL);
+        if (viewL[1] - parentL[1] > 0) {
+            if (viewL[1] - parentL[1] > tipHeight) {
+                tipTempHeight = tipHeight;
+            } else {
+                tipTempHeight = viewL[1] - parentL[1];
+            }
             return true;
         }
         return false;
     }
 
     private String findIndex(RecyclerView parent) {
-        int p = ((LinearLayoutManager) parent.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        int p = ((LinearLayoutManager) parent.getLayoutManager()).findFirstVisibleItemPosition();
         return Character.toString(mList.get(p).getFirst());
     }
 }

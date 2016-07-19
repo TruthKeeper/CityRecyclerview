@@ -14,6 +14,7 @@ import com.tk.citypicker.adapter.CityAdapter;
 import com.tk.citypicker.bean.CityBean;
 import com.tk.citypicker.callback.OnRecyclerClickListener;
 import com.tk.citypicker.utils.DataUtils;
+import com.tk.citypicker.utils.ScrollUtils;
 import com.tk.citypicker.view.MyItemDecoration;
 import com.tk.citypicker.view.MySortView;
 
@@ -40,13 +41,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        sortView.setTextView(textview);
+
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         recyclerview.setHasFixedSize(true);
         recyclerview.setItemAnimator(new DefaultItemAnimator());
+        //初始化数据源
         mList = DataUtils.getCitybeanList();
+        //初始化sortview
+        sortView.setTextView(textview);
+        sortView.initData(DataUtils.getIndexList(mList));
+
         recyclerview.addItemDecoration(new MyItemDecoration(this, mList));
         adapter = new CityAdapter(this, mList);
+
         recyclerview.setAdapter(adapter);
         recyclerview.addOnItemTouchListener(new OnRecyclerClickListener(recyclerview) {
             @Override
@@ -61,8 +68,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTouch(char c) {
                 int p = DataUtils.findPosition(c, mList);
-                recyclerview.scrollToPosition(DataUtils.findPosition(c, mList));
+                ScrollUtils.scrollTo(recyclerview, p);
             }
         });
+
+
     }
 }
